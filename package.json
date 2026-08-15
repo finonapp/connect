@@ -16,6 +16,7 @@
   "license": "MIT",
   "sideEffects": false,
   "devDependencies": {
+    "@biomejs/biome": "^2.5.8",
     "@types/bun": "latest"
   },
   "scripts": {
