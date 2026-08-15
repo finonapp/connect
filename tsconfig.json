@@ -25,5 +25,7 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false
-  }
+  },
+  // The playground is its own Astro project with its own tsconfig.
+  "exclude": ["node_modules", "playground"]
 }
