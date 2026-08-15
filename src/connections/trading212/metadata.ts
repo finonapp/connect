@@ -10,6 +10,10 @@ export const trading212Metadata: ProviderMetadata = {
 	countries: ["GB"],
 	website: "https://www.trading212.com",
 	appUrl: "trading212://",
+	params: [
+		{ key: "apiKey", label: "Key ID" },
+		{ key: "apiSecret", label: "Secret Key" },
+	],
 	setup: [
 		{
 			description: "Open {{link}} and log into your account.",
@@ -27,11 +31,10 @@ export const trading212Metadata: ProviderMetadata = {
 		},
 		{
 			description:
-				"Generate a new API key, set a name (e.g. the app you are connecting), make sure IP access is unrestricted, and grant access to \"Account Info\", \"Portfolio\", \"History - Transactions\" and \"History - Orders\".",
+				'Generate a new API key, set a name (e.g. the app you are connecting), make sure IP access is unrestricted, and grant access to "Account Data", "Portfolio", "Metadata", "History - Transactions", "History - Orders" and "History - Dividends".',
 		},
 		{
-			description:
-				"You will now be presented with an API Key ID and a Secret Key. Copy and paste those into the form.",
+			description: "You will now be presented with an API Key ID and a Secret Key. Copy and paste those into the form.",
 		},
 	],
 };
