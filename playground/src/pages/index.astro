@@ -1,0 +1,50 @@
+---
+export const prerender = false;
+import { providers } from "@finon/connect";
+import "../styles/global.css";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@finon/connect playground</title>
+  </head>
+  <body>
+    <main>
+      <header class="page-header">
+        <h1>@finon/connect</h1>
+        <p class="subtitle">
+          Local playground for testing provider connections. Pick a provider to
+          start.
+        </p>
+      </header>
+      <ul class="provider-list">
+        {
+          providers.map((provider) => (
+            <li>
+              <a class="provider-row" href={`/${provider.id}`}>
+                <span class="provider-info">
+                  <span class="provider-title">
+                    <span class="provider-name">{provider.name}</span>
+                    <span class="chip">{provider.auth}</span>
+                  </span>
+                  <span class="provider-tags">
+                    {provider.assetTypes.map((type) => (
+                      <span class="tag" data-type={type}>
+                        <span class="tag-dot" />
+                        {type}
+                      </span>
+                    ))}
+                  </span>
+                </span>
+                <span class="chevron">›</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </main>
+  </body>
+</html>
