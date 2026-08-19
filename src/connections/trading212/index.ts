@@ -1,4 +1,4 @@
-import { AssetType } from "../../core";
+import { AssetType, type ProviderMetadata } from "../../core";
 import { PROVIDER_ID, PROVIDER_NAME } from "./constants";
 import { Trading212 } from "./trading212";
 
@@ -38,7 +38,7 @@ export const trading212 = {
 			description: "You will now be presented with an API Key ID and a Secret Key. Copy and paste those into the form.",
 		},
 	],
-};
+} satisfies ProviderMetadata & { Client: typeof Trading212 };
 
 export type { Trading212 } from "./trading212";
 export type * from "./types";
