@@ -1,8 +1,8 @@
-import type { ProviderMetadata } from "../../core/metadata";
-import { AssetType } from "../../core/types";
+import { AssetType } from "../../core";
 import { PROVIDER_ID, PROVIDER_NAME } from "./constants";
+import { Trading212 } from "./trading212";
 
-export const trading212Metadata: ProviderMetadata = {
+export const trading212 = {
 	id: PROVIDER_ID,
 	name: PROVIDER_NAME,
 	auth: "api-key",
@@ -10,6 +10,7 @@ export const trading212Metadata: ProviderMetadata = {
 	countries: ["GB"],
 	website: "https://www.trading212.com",
 	appUrl: "trading212://",
+	Client: Trading212,
 	params: [
 		{ key: "apiKey", label: "Key ID" },
 		{ key: "apiSecret", label: "Secret Key" },
@@ -38,3 +39,6 @@ export const trading212Metadata: ProviderMetadata = {
 		},
 	],
 };
+
+export type { Trading212 } from "./trading212";
+export type * from "./types";
