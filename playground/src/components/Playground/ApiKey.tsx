@@ -1,28 +1,32 @@
 import type { ProviderMetadata } from "@finon/connect";
-import { useRun } from "@lib/hooks";
 import { postJson } from "@lib/http";
-import { isConnected } from "@lib/store";
 import { useState } from "react";
 import { SetupInstruction } from "../SetupInstruction";
 
 type Props = {
   provider: ProviderMetadata;
   setConnected: (connected: boolean) => void;
-  setBanner: (banner: { kind: "ok" | "error"; text: string } | null) => void;
+  run: (fn: () => Promise<void>) => Promise<void>;
+  busy: boolean;
+  connected: boolean;
 };
 
-export function PlaygroundApiKey({ provider, setConnected, setBanner }: Props) {
-  const { run, banner, busy } = useRun();
-  const connected = isConnected(provider.id);
+export function PlaygroundApiKey({
+  provider,
+  setConnected,
+  run,
+  busy,
+  connected,
+}: Props) {
   const [values, setValues] = useState<Record<string, string>>({});
   const filled = provider.params.every((param) => values[param.key]?.trim());
 
   async function connect() {
+    console.log("values: ", values);
     return run(async () => {
       await postJson(`/api/${provider.id}/connect`, values);
       setValues({});
       setConnected(true);
-      setBanner(banner);
     });
   }
 

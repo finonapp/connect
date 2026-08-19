@@ -1,6 +1,6 @@
 ---
 export const prerender = false;
-import { providers } from "@finon/connect";
+import providers from "@finon/connect";
 import "../styles/global.css";
 ---
 
@@ -22,7 +22,7 @@ import "../styles/global.css";
       </header>
       <ul class="provider-list">
         {
-          providers.map((provider) => (
+          Object.values(providers).map((provider) => (
             <li>
               <a class="provider-row" href={`/${provider.id}`}>
                 <span class="provider-info">

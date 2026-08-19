@@ -3,7 +3,7 @@ import { useRun } from "@lib/hooks";
 import { getJson, postJson } from "@lib/http";
 import { isConnected, reset } from "@lib/store";
 import { useEffect, useState } from "react";
-import DataView from "../DataView";
+import DataViewer from "../DataView";
 import { PlaygroundApiKey } from "./ApiKey";
 
 export default function Playground({
@@ -12,12 +12,7 @@ export default function Playground({
   provider: ProviderMetadata;
 }) {
   const [connected, setConnected] = useState(false);
-  const [banner, setBanner] = useState<{
-    kind: "ok" | "error";
-    text: string;
-  } | null>(null);
-
-  const { busy, run } = useRun();
+  const { busy, banner, run } = useRun();
 
   // Data
   const [assets, setAssets] = useState<Asset[] | null>(null);
@@ -34,7 +29,6 @@ export default function Playground({
       setAssets(null);
       setTransactions(null);
       setConnected(false);
-      setBanner({ kind: "ok", text: "Disconnected." });
     });
   }
 
@@ -93,7 +87,9 @@ export default function Playground({
           <PlaygroundApiKey
             provider={provider}
             setConnected={setConnected}
-            setBanner={setBanner}
+            run={run}
+            busy={busy}
+            connected={connected}
           />
         ) : (
           <p className="muted">
@@ -124,7 +120,7 @@ export default function Playground({
         </div>
         {assets ? (
           <>
-            <DataView
+            <DataViewer
               title=""
               items={assets as unknown as Array<Record<string, unknown>>}
             />
@@ -156,7 +152,7 @@ export default function Playground({
       <section className="card">
         <h2>Transactions{transactions ? ` — ${txnAssetName}` : ""}</h2>
         {transactions ? (
-          <DataView
+          <DataViewer
             title=""
             items={transactions as unknown as Array<Record<string, unknown>>}
           />
