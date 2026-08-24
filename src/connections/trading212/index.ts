@@ -1,4 +1,4 @@
-import { AssetType, AuthKind, type Provider } from "../../core";
+import { type ApiKeyCredentials, AssetType, AuthKind, type Provider } from "../../core";
 import { PROVIDER_ID, PROVIDER_NAME } from "./constants";
 import { Trading212Client } from "./trading212";
 
@@ -38,6 +38,6 @@ export const trading212 = {
 			description: "You will now be presented with an API Key ID and a Secret Key. Copy and paste those into the form.",
 		},
 	],
-} satisfies Provider;
+} satisfies Provider<ApiKeyCredentials>;
 
 export type { Trading212Client } from "./trading212";
