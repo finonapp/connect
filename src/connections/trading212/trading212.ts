@@ -1,4 +1,4 @@
-import type { FetchOptions, Session, Transaction } from "../../core";
+import type { ApiKeyClient, FetchOptions, Transaction } from "../../core";
 import { AssetType, type ApiKeyCredentials, type Asset } from "../../core/types";
 import {
 	cachedInstrumentIndex,
@@ -29,20 +29,18 @@ import type { Trading212AccountSummary, Trading212CatalogueInstrument } from "./
  *
  * @example
  * ```ts
- * const trading212 = new Trading212();
- *
  * // 1. Verify the key pair the user submitted.
- * const credentials = { apiKey, apiSecret };
- * const missing = await trading212.verify(credentials);
+ * const client = new Trading212Client({ apiKey, apiSecret });
+ * const missing = await client.verify();
  * if (missing.length > 0) throw new Error(`Key is missing: ${missing.join(", ")}`);
- * // ...persist `credentials` (encrypted) for this user.
+ * // ...persist the credentials (encrypted) for this user.
  *
- * // 2. Later, open a session and pull normalized data.
- * const session = trading212.session(credentials);
- * const { assets, transactions } = await session.sync();
+ * // 2. Later, pull normalized data with a client built from the stored keys.
+ * const assets = await client.getAssets();
+ * const transactions = await client.getTransactions();
  * ```
  */
-export class Trading212 implements Session<ApiKeyCredentials> {
+export class Trading212Client implements ApiKeyClient {
 	readonly id = PROVIDER_ID;
 	readonly name = PROVIDER_NAME;
 	private readonly baseUrl = LIVE_BASE_URL;
@@ -66,7 +64,7 @@ export class Trading212 implements Session<ApiKeyCredentials> {
 		return this.summary;
 	}
 
-	async getInstrumentIndex(): Promise<Map<string, Trading212CatalogueInstrument>> {
+	private async getInstrumentIndex(): Promise<Map<string, Trading212CatalogueInstrument>> {
 		return cachedInstrumentIndex(this.baseUrl, this.credentials);
 	}
 
@@ -74,7 +72,7 @@ export class Trading212 implements Session<ApiKeyCredentials> {
 		const [summary, assets, instruments] = await Promise.all([
 			this.accountSummary(),
 			fetchPositions(this.baseUrl, this.credentials),
-			cachedInstrumentIndex(this.baseUrl, this.credentials),
+			this.getInstrumentIndex(),
 		]);
 
 		return [
