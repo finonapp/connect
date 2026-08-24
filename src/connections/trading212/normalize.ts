@@ -121,12 +121,10 @@ export function normalizeCashAccount(summary: Trading212AccountSummary): Asset<T
 }
 
 /**
- * Normalize an open position into a stock asset. The position embeds its
- * instrument's name and currency; pass the matching catalogue instrument to
- * resolve the clean symbol and exchange. `id` is then a cross-provider
- * identifier in the legacy `SYMBOL:EXCHANGE` form (e.g. "AAPL:NASDAQ"),
- * falling back to the bare symbol when the exchange is unknown; the Trading
- * 212 ticker stays on `slug` (and `raw`).
+ * Normalize an open position into a stock asset. `id` is the Trading 212
+ * ticker (e.g. "AAPL_US_EQ"). The position embeds its instrument's name and
+ * currency; pass the matching catalogue instrument to resolve the clean
+ * symbol and exchange.
  */
 export function normalizePosition(
 	position: Trading212Position,
@@ -176,7 +174,6 @@ export function normalizeDividend(
 	fallbackCurrency: string,
 ): Transaction<Trading212Dividend> {
 	const currency = dividend.currency ?? fallbackCurrency;
-	console.log("Normalizing dividend asset: " + currency);
 	return {
 		id: dividend.reference,
 		flow: TransactionFlow.EARNED,
@@ -202,8 +199,6 @@ export function normalizeOrder(
 	const { order, fill } = event;
 	const quantity = Math.abs(fill?.quantity ?? order.filledQuantity ?? 0);
 	const amount = fill?.walletImpact?.netValue ?? order.filledValue ?? 0;
-
-	console.log("Normalizing order asset: " + order.ticker);
 
 	return {
 		id: fill?.id !== undefined ? `${order.id}-${fill.id}` : String(order.id),
