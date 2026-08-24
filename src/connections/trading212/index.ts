@@ -1,16 +1,16 @@
-import { AssetType, type ProviderMetadata } from "../../core";
+import { AssetType, AuthKind, type Provider } from "../../core";
 import { PROVIDER_ID, PROVIDER_NAME } from "./constants";
-import { Trading212 } from "./trading212";
+import { Trading212Client } from "./trading212";
 
 export const trading212 = {
 	id: PROVIDER_ID,
 	name: PROVIDER_NAME,
-	auth: "api-key",
+	auth: AuthKind.API_KEY,
 	assetTypes: [AssetType.STOCK, AssetType.CASH],
 	countries: ["GB"],
 	website: "https://www.trading212.com",
 	appUrl: "trading212://",
-	Client: Trading212,
+	Client: Trading212Client,
 	params: [
 		{ key: "apiKey", label: "Key ID" },
 		{ key: "apiSecret", label: "Secret Key" },
@@ -38,7 +38,6 @@ export const trading212 = {
 			description: "You will now be presented with an API Key ID and a Secret Key. Copy and paste those into the form.",
 		},
 	],
-} satisfies ProviderMetadata & { Client: typeof Trading212 };
+} satisfies Provider;
 
-export type { Trading212 } from "./trading212";
-export type * from "./types";
+export type { Trading212Client } from "./trading212";
