@@ -17,32 +17,24 @@ export enum TransactionFlow {
 	OTHER = "other",
 }
 
-/**
- * OAuth credentials for a connected account.
- *
- * Tokens are returned in plain text. Encrypt them yourself before persisting.
- * `expiresAt` is a Unix timestamp in **seconds**.
- */
-export interface Credentials {
-	accessToken: string;
-	refreshToken: string;
-	expiresAt: number;
-	tokenType?: string;
-	scope?: string;
+export enum AuthKind {
+	API_KEY = "api-key",
+	OAUTH = "oauth",
 }
 
 /**
- * API key credentials for key-based connections (e.g. Trading 212).
+ * Credentials for a connected account, whatever the auth kind.
  *
- * Keys are handled in plain text. Encrypt them yourself before persisting.
+ * Secrets are handled in plain text. Encrypt them yourself before persisting.
  */
+export type Credentials = ApiKeyCredentials | OAuthCredentials;
+
 export interface ApiKeyCredentials {
 	apiKey: string;
 	apiSecret: string;
 }
 
-/** Configuration shared by all OAuth-based connections. */
-export interface OAuthConfig {
+export interface OAuthCredentials {
 	clientId: string;
 	clientSecret: string;
 	/** The callback URL registered with the provider. */
