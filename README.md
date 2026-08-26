@@ -4,14 +4,15 @@ Connect to financial providers with a uniform contract and a normalized data mod
 
 - **Zero infrastructure coupling.** No database, no auth provider, no environment variables. Just `fetch` and TypeScript.
 - **Normalized model.** Every provider maps its payloads into the same `Asset` / `Transaction` shapes; the original payload is always on `raw`.
-- **Uniform contract.** OAuth providers implement `Connection`, API-key providers implement `ApiKeyConnection`, and every session exposes the same `getAssets()` / `getTransactions()`, so adding providers does not change how you consume data.
+- **Uniform contract.** API-key providers implement `ApiKeyClient`, file-import providers (statement uploads) implement `FileImportClient`, and every client exposes the same `getAssets()` / `getTransactions()`, so adding providers does not change how you consume data.
 - **Pickers for free.** Each provider ships static metadata (id, name, auth type, asset types, setup steps) so you can render a "connect an account" flow without hardcoding provider knowledge.
 
 ## Available connections
 
-| Provider    | Auth    | Asset types  |
-| ----------- | ------- | ------------ |
-| Trading 212 | API key | Stocks, cash |
+| Provider    | Auth        | Asset types           |
+| ----------- | ----------- | --------------------- |
+| Trading 212 | API key     | Stocks, cash          |
+| Moneybox    | File import | Stocks, cash, savings |
 
 Per-provider usage and setup details will live in the docs; in the meantime, each provider's metadata (`setup`, `params`) and the [playground](playground/) show the full flow.
 
@@ -36,6 +37,21 @@ if (missing.length > 0) throw new Error(`Key is missing: ${missing.join(", ")}`)
 // Pull normalized data.
 const assets = await client.getAssets();
 const transactions = await client.getTransactions({ since: lastSyncedAt });
+```
+
+Providers without an API work the same way from statement files. Moneybox, for example, parses the PDF statement the user generates in the app:
+
+```ts
+import { moneybox } from "@finon/connect";
+
+const client = new moneybox.Client({ files: [statementPdf] });
+
+// Returns the names of files that are not readable Moneybox statements.
+const unreadable = await client.verify();
+if (unreadable.length > 0) throw new Error(`Not statements: ${unreadable.join(", ")}`);
+
+const assets = await client.getAssets(); // funds, cash, Cash ISA balance
+const transactions = await client.getTransactions();
 ```
 
 All providers are also available through the default export, keyed by id:
