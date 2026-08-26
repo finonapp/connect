@@ -3,9 +3,7 @@ export const prerender = false;
 import providers from "@finon/connect";
 import Playground from "../components/Playground/index";
 import "../styles/global.css";
-const provider = Object.values(providers).find(
-  (p) => p.id === Astro.params.provider,
-);
+const provider = Object.values(providers).find((p) => p.id === Astro.params.provider);
 if (!provider) return Astro.redirect("/");
 ---
 
