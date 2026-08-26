@@ -1,4 +1,4 @@
-import type { Session } from "@finon/connect";
+import type { Client } from "@finon/connect";
 
 /**
  * In-memory, single-user session store for the playground, keyed by provider
@@ -12,9 +12,9 @@ import type { Session } from "@finon/connect";
  * never persisted to disk, and are never sent to the browser. Restarting the
  * server clears everything. Do not deploy this anywhere public.
  */
-const sessions = new Map<string, Session<unknown>>();
+const sessions = new Map<string, Client>();
 
-export function setSession(providerId: string, session: Session<unknown>): void {
+export function setSession(providerId: string, session: Client): void {
 	sessions.set(providerId, session);
 }
 
@@ -23,7 +23,7 @@ export function isConnected(providerId: string): boolean {
 }
 
 /** The provider's open session. Throws when not connected yet. */
-export function getSession(providerId: string): Session<unknown> {
+export function getSession(providerId: string): Client {
 	const session = sessions.get(providerId);
 	if (!session) throw new Error(`Not connected to ${providerId} yet`);
 	return session;

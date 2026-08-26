@@ -8,6 +8,8 @@
 	/* Brand tokens borrowed from app/apps/mobile (styles/global.ts `ui`). */
 	--accent: #2563eb;
 	--accent-hover: #1d4fd8;
+	/* Faint accent wash for drag-over and other "active target" surfaces. */
+	--accent-soft: rgba(37, 99, 235, 0.1);
 	--ok: #0e9f6e;
 	--error: #e5484d;
 
@@ -389,6 +391,113 @@ tbody tr:last-child td {
 
 .help-steps ol {
 	margin: 0.5rem 0 0;
+}
+
+/* File import: drop zone and selected-file rows, styled like the credential inputs. */
+.file-field {
+	margin-top: 1rem;
+}
+
+.file-field .field-label {
+	display: block;
+	color: var(--muted);
+}
+
+.drop-zone {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.2rem;
+	width: 100%;
+	margin-top: 0.35rem;
+	padding: 1.5rem 1rem;
+	background: var(--surface-2);
+	border: 1px dashed var(--border);
+	border-radius: 8px;
+	color: var(--text);
+	text-align: center;
+	transition:
+		border-color 120ms ease,
+		background-color 120ms ease;
+}
+
+/* The real file input is driven from the drop zone; the global `input` rule would otherwise show it. */
+.file-input {
+	display: none;
+}
+
+/* Children must not intercept drag events, or dragleave fires while crossing them. */
+.drop-zone > * {
+	pointer-events: none;
+}
+
+.drop-zone:hover:not(:disabled),
+.drop-zone:focus-visible {
+	border-color: var(--accent);
+	outline: none;
+}
+
+.drop-zone.dragging {
+	border-style: solid;
+	border-color: var(--accent);
+	background: var(--accent-soft);
+}
+
+.drop-zone-title {
+	font-weight: 600;
+	font-size: 0.95rem;
+}
+
+.drop-zone-hint {
+	color: var(--muted);
+	font-size: 0.8rem;
+}
+
+.file-list {
+	list-style: none;
+	margin: 0.75rem 0 0;
+	padding: 0;
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	overflow: hidden;
+}
+
+.file-row {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	padding: 0.55rem 0.8rem;
+	border-bottom: 1px solid var(--border);
+	font-size: 0.9rem;
+}
+
+.file-row:last-child {
+	border-bottom: none;
+}
+
+.file-name {
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.file-size {
+	color: var(--muted);
+	font-size: 0.8rem;
+	white-space: nowrap;
+}
+
+.file-row button {
+	margin: 0;
+	padding: 0.3rem 0.6rem;
+	font-size: 0.8rem;
+}
+
+.file-note {
+	margin: 0.75rem 0 0;
+	font-size: 0.82rem;
 }
 
 .raw-json {

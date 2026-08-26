@@ -1,5 +1,5 @@
 import { trading212 } from "@finon/connect";
-import { errorResponse, json } from "@lib/http";
+import { errorResponse, json } from "@lib/server";
 import { setSession } from "@lib/store";
 import type { APIRoute } from "astro";
 

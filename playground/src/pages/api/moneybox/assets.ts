@@ -5,13 +5,12 @@ import type { APIRoute } from "astro";
 export const prerender = false;
 
 /**
- * Fetch and normalize everything the user holds at Trading 212: open stock
- * positions plus the free cash balance.
+ * Everything the uploaded statements hold: fund positions and the cash line of
+ * a Stocks & Shares ISA, the balance of a Cash ISA.
  */
 export const GET: APIRoute = async () => {
 	try {
-		const assets = await getSession("trading212").getAssets();
-		console.log(JSON.stringify(assets, null, 2));
+		const assets = await getSession("moneybox").getAssets();
 		return json({ assets });
 	} catch (error) {
 		return errorResponse(error);

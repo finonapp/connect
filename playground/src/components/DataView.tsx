@@ -46,11 +46,7 @@ export default function DataView({ title, items }: DataViewProps) {
 					<span className="count">({items.length})</span>
 				</h3>
 				<div className="toggle">
-					<button
-						type="button"
-						className={mode === "normalized" ? "active" : ""}
-						onClick={() => setMode("normalized")}
-					>
+					<button type="button" className={mode === "normalized" ? "active" : ""} onClick={() => setMode("normalized")}>
 						Normalized
 					</button>
 					<button type="button" className={mode === "raw" ? "active" : ""} onClick={() => setMode("raw")}>
@@ -81,7 +77,13 @@ export default function DataView({ title, items }: DataViewProps) {
 					</table>
 				</div>
 			) : (
-				<pre className="raw-json">{JSON.stringify(items.map((item) => item.raw ?? item), null, 2)}</pre>
+				<pre className="raw-json">
+					{JSON.stringify(
+						items.map((item) => item.raw ?? item),
+						null,
+						2,
+					)}
+				</pre>
 			)}
 		</section>
 	);
