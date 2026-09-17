@@ -14,10 +14,8 @@ export interface Provider<C extends Credentials = Credentials> {
 	/** Human readable provider name, e.g. "Trading 212". */
 	name: string;
 	auth: AuthKind;
-	/** The class a consumer instantiates to talk to the provider. */
-	Client: new (
-		credentials: C,
-	) => Client<C>;
+	/** The client class for this provider; `createClient` instantiates and verifies it. */
+	createClient: (credentials: C) => Promise<Client<C>>;
 	/** Asset types a session with this provider can return. */
 	assetTypes: AssetType[];
 	/** ISO 3166-1 alpha-2 countries served. Omitted = not specified. */
@@ -26,8 +24,9 @@ export interface Provider<C extends Credentials = Credentials> {
 	/** Deep link into the provider's mobile app, when it has one. */
 	appUrl?: string;
 	/**
-	 * Credential fields to collect from the user, in display order. Empty for
-	 * OAuth providers, where the redirect collects everything.
+	 * Fields to collect from the user, in display order: text fields for API
+	 * keys, a file field for statement uploads. Empty for OAuth providers,
+	 * where the redirect collects everything.
 	 */
 	params: CredentialParam[];
 	/**
@@ -57,13 +56,18 @@ export interface SetupStep {
 }
 
 /**
- * One credential field to collect from the user, in display order. `key`
- * matches the field name in the provider's credentials object (e.g.
- * `apiKey`), so the collected values can be passed to the `Client`
- * constructor as-is.
+ * One field to collect from the user, in display order. `key` matches the
+ * field name in the provider's credentials object (e.g. `apiKey`, `files`),
+ * so the collected values can be passed to the `Client` constructor as-is.
  */
 export interface CredentialParam {
 	key: string;
 	/** Human readable field label, e.g. "Key ID". */
 	label: string;
+	/** Kind of input. Defaults to a secret text field; "file" asks for an upload. */
+	type?: "text" | "file";
+	/** For `type: "file"`: accepted file types, in HTML `accept` attribute syntax. */
+	accept?: string;
+	/** For `type: "file"`: whether the user may provide several files at once. */
+	multiple?: boolean;
 }

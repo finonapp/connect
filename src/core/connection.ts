@@ -1,4 +1,4 @@
-import type { ApiKeyCredentials, Asset, Credentials, Transaction } from "./types";
+import type { Asset, Credentials, Transaction } from "./types";
 
 /** Options for fetching transactions. */
 export interface FetchOptions {
@@ -13,11 +13,25 @@ export interface FetchOptions {
 /**
  * An authenticated session for one connected account. OAuth sessions
  * transparently refresh the access token when expired (notifying via
- * `onRefresh`); API-key sessions authenticate every request with the key pair.
+ * `onRefresh`); API-key sessions authenticate every request with the key pair;
+ * file-import sessions read everything from the statement files they were
+ * given.
+ *
+ * Build one with `createClient`, which verifies the credentials before handing
+ * the client back. Use `new provider.Client(credentials)` directly only to
+ * rebuild a client from credentials that were already verified and stored.
  */
 export interface Client<C = Credentials> {
 	/** The current credentials (updated in place after a refresh). */
 	readonly credentials: C;
+
+	/**
+	 * Check the credentials are usable: probe the API with the key pair, or
+	 * parse the statement files. Resolves when everything is in order and
+	 * throws a `ConnectError` describing what is wrong (missing permissions,
+	 * unreadable files) otherwise. `createClient` calls this for you.
+	 */
+	verify(): Promise<void>;
 
 	/** Fetch and normalize everything the user holds. */
 	getAssets(): Promise<Asset[]>;
@@ -27,17 +41,4 @@ export interface Client<C = Credentials> {
 	 * single asset via `options.asset`.
 	 */
 	getTransactions(options?: FetchOptions): Promise<Transaction[]>;
-}
-
-/**
- * Client contract for API-key providers. On top of the data methods, the key
- * pair can be verified before being persisted.
- */
-export interface ApiKeyClient extends Client<ApiKeyCredentials> {
-	/**
-	 * Probe the API with the client's key pair and return the human-readable
-	 * names of the permissions the key is missing. An empty array means the
-	 * key is valid and fully usable.
-	 */
-	verify(): Promise<string[]>;
 }

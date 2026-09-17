@@ -20,6 +20,11 @@ export enum TransactionFlow {
 export enum AuthKind {
 	API_KEY = "api-key",
 	OAUTH = "oauth",
+	/**
+	 * No API at all: the user exports a statement from the provider and hands
+	 * the file(s) over. Nothing to persist beyond the data you extract.
+	 */
+	FILE_IMPORT = "file-import",
 }
 
 /**
@@ -27,7 +32,7 @@ export enum AuthKind {
  *
  * Secrets are handled in plain text. Encrypt them yourself before persisting.
  */
-export type Credentials = ApiKeyCredentials | OAuthCredentials;
+export type Credentials = ApiKeyCredentials | OAuthCredentials | FileImportCredentials;
 
 export interface ApiKeyCredentials {
 	apiKey: string;
@@ -39,6 +44,16 @@ export interface OAuthCredentials {
 	clientSecret: string;
 	/** The callback URL registered with the provider. */
 	redirectUri: string;
+}
+
+/**
+ * Input for file-import providers. The statement files play the role of
+ * credentials: they are what the user hands over to give access to their
+ * data. Unlike keys and tokens, there is nothing to store afterwards.
+ */
+export interface FileImportCredentials {
+	/** Statement files exported by the user from the provider (e.g. PDFs). */
+	files: Blob[];
 }
 
 /**
