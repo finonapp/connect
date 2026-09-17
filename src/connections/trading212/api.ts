@@ -1,3 +1,4 @@
+import { ConnectError } from "../../core/errors";
 import type { ApiKeyCredentials } from "../../core/types";
 import { t212Fetch } from "./client";
 import {
@@ -14,6 +15,7 @@ import {
 	PERMISSION_METADATA,
 	PERMISSION_PORTFOLIO,
 	POSITIONS_PATH,
+	PROVIDER_ID,
 	TRANSACTIONS_PAGE_SIZE,
 } from "./constants";
 import { buildInstrumentIndex } from "./normalize";
@@ -172,7 +174,12 @@ export function fetchDividends(
 	);
 }
 
-export async function verifyPermissions(baseUrl: string, credentials: ApiKeyCredentials): Promise<string[]> {
+/**
+ * Probe one endpoint per required permission and throw a `ConnectError`
+ * naming the permissions the key pair is missing. Resolves when the key is
+ * fully usable.
+ */
+export async function verifyPermissions(baseUrl: string, credentials: ApiKeyCredentials): Promise<void> {
 	const probes: Array<[string, () => Promise<unknown>]> = [
 		[PERMISSION_ACCOUNT, () => fetchAccountSummary(baseUrl, credentials)],
 		[PERMISSION_PORTFOLIO, () => fetchPositions(baseUrl, credentials)],
@@ -190,7 +197,10 @@ export async function verifyPermissions(baseUrl: string, credentials: ApiKeyCred
 			missing.push(permission);
 		}
 	}
-	return missing;
+
+	if (missing.length > 0) {
+		throw new ConnectError(PROVIDER_ID, `API key is missing permissions: ${missing.join(", ")}`, { status: 403 });
+	}
 }
 
 /**

@@ -10,7 +10,12 @@ export const trading212 = {
 	countries: ["GB"],
 	website: "https://www.trading212.com",
 	appUrl: "trading212://",
-	Client: Trading212Client,
+	createClient: async (credentials: ApiKeyCredentials) => {
+		const client = new Trading212Client(credentials);
+		await client.verify();
+
+		return client;
+	},
 	params: [
 		{ key: "apiKey", label: "Key ID" },
 		{ key: "apiSecret", label: "Secret Key" },

@@ -1,4 +1,4 @@
-import type { ApiKeyClient, FetchOptions, Transaction } from "../../core";
+import type { Client, FetchOptions, Transaction } from "../../core";
 import { AssetType, type ApiKeyCredentials, type Asset } from "../../core/types";
 import {
 	cachedInstrumentIndex,
@@ -40,7 +40,7 @@ import type { Trading212AccountSummary, Trading212CatalogueInstrument } from "./
  * const transactions = await client.getTransactions();
  * ```
  */
-export class Trading212Client implements ApiKeyClient {
+export class Trading212Client implements Client<ApiKeyCredentials> {
 	readonly id = PROVIDER_ID;
 	readonly name = PROVIDER_NAME;
 	private readonly baseUrl = LIVE_BASE_URL;
@@ -52,8 +52,8 @@ export class Trading212Client implements ApiKeyClient {
 		this.credentials = credentials;
 	}
 
-	verify(): Promise<string[]> {
-		return verifyPermissions(this.baseUrl, this.credentials);
+	async verify(): Promise<void> {
+		await verifyPermissions(this.baseUrl, this.credentials);
 	}
 
 	/** Fetch (and cache) the account summary; provides the account currency. */
