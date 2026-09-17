@@ -12,15 +12,10 @@ export const POST: APIRoute = async ({ request }) => {
 			return json({ error: "apiKey and apiSecret are required" }, 400);
 		}
 
-		const Trading212 = new trading212.Client({
+		const Trading212 = await trading212.createClient({
 			apiKey: body.apiKey.trim(),
 			apiSecret: body.apiSecret.trim(),
 		});
-
-		const missing = await Trading212.verify();
-		if (missing.length > 0) {
-			return json({ error: `The key is invalid or missing permissions: ${missing.join(", ")}` }, 400);
-		}
 
 		setSession(trading212.id, Trading212);
 		return json({ ok: true });

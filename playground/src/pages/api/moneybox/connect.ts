@@ -18,12 +18,7 @@ export const POST: APIRoute = async ({ request }) => {
 			return json({ error: "Upload at least one statement PDF under the 'files' field" }, 400);
 		}
 
-		const Moneybox = new moneybox.Client({ files });
-
-		const unreadable = await Moneybox.verify();
-		if (unreadable.length > 0) {
-			return json({ error: `Not readable as Moneybox statements: ${unreadable.join(", ")}` }, 400);
-		}
+		const Moneybox = await moneybox.createClient({ files });
 
 		setSession(moneybox.id, Moneybox);
 		return json({ ok: true, files: files.map((file) => file.name) });
