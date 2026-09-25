@@ -221,8 +221,6 @@ export async function cachedInstrumentIndex(
 
 	const catalogue = Promise.all([
 		fetchInstruments(baseUrl, credentials),
-		// Exchanges only add the exchange code to identifiers; degrade to an
-		// instruments-only index rather than failing the whole catalogue.
 		fetchExchanges(baseUrl, credentials).catch((): Trading212Exchange[] => []),
 	]).then(([instruments, exchanges]) => {
 		const index = buildInstrumentIndex(instruments, exchanges);
@@ -233,9 +231,6 @@ export async function cachedInstrumentIndex(
 	try {
 		return await catalogue;
 	} catch (_error) {
-		// Metadata only improves symbols and identifiers, so a failure (e.g. a
-		// key without that scope) degrades to a stale or empty index instead
-		// of failing the sync.
-		return cached?.index ?? new Map();
+		throw new ConnectError(PROVIDER_ID, "Failed to fetch instrument catalogue", { cause: _error });
 	}
 }

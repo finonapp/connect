@@ -17,7 +17,7 @@ import {
 	normalizeOrder,
 	normalizePosition,
 } from "./normalize";
-import type { Trading212AccountSummary, Trading212CatalogueInstrument } from "./types";
+import type { Trading212AccountSummary } from "./types";
 
 /**
  * Trading 212 connection client.
@@ -64,15 +64,12 @@ export class Trading212Client implements Client<ApiKeyCredentials> {
 		return this.summary;
 	}
 
-	private async getInstrumentIndex(): Promise<Map<string, Trading212CatalogueInstrument>> {
-		return cachedInstrumentIndex(this.baseUrl, this.credentials);
-	}
 
 	async getAssets(): Promise<Asset[]> {
 		const [summary, assets, instruments] = await Promise.all([
 			this.accountSummary(),
 			fetchPositions(this.baseUrl, this.credentials),
-			this.getInstrumentIndex(),
+			cachedInstrumentIndex(this.baseUrl, this.credentials)
 		]);
 
 		return [

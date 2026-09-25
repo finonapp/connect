@@ -39,14 +39,21 @@ function toEpochMs(reset: number): number {
 	return reset < 1e12 ? reset * 1000 : reset;
 }
 
+function parseRateLimitHeader(value: string | null): number | null {
+	if (value === null || value.trim() === "") return null;
+
+	const parsed = Number(value);
+	return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
+}
+
 function readBucket(response: Response): Bucket | null {
-	const remaining = response.headers.get("x-ratelimit-remaining");
-	const reset = response.headers.get("x-ratelimit-reset");
+	const remaining = parseRateLimitHeader(response.headers.get("x-ratelimit-remaining"));
+	const reset = parseRateLimitHeader(response.headers.get("x-ratelimit-reset"));
 	if (remaining === null && reset === null) return null;
 
 	return {
-		remaining: remaining !== null ? Number(remaining) : null,
-		resetAt: reset !== null ? toEpochMs(Number(reset)) : null,
+		remaining,
+		resetAt: reset !== null ? toEpochMs(reset) : null,
 	};
 }
 
@@ -84,8 +91,9 @@ export async function t212Fetch<T>(url: string, credentials: ApiKeyCredentials):
 		if (state) buckets.set(bucket, state);
 
 		if (response.status === 429) {
-			const wait = waitTimeFor(state ?? { remaining: 0, resetAt: null }, 2 ** attempt * 3000);
-			await sleep(wait);
+			const backoff = 2 ** attempt * 3000;
+			const wait = waitTimeFor(state ?? undefined, backoff);
+			await sleep(Math.max(wait, backoff));
 			continue;
 		}
 
