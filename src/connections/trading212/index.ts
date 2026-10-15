@@ -1,5 +1,6 @@
 import { type ApiKeyCredentials, AssetType, AuthKind, type Provider } from "../../core";
-import { PROVIDER_ID, PROVIDER_NAME } from "./constants";
+import { verifyPermissions } from "./api";
+import { LIVE_BASE_URL, PROVIDER_ID, PROVIDER_NAME } from "./constants";
 import { Trading212Client } from "./trading212";
 
 export const trading212 = {
@@ -8,18 +9,14 @@ export const trading212 = {
 	auth: AuthKind.API_KEY,
 	assetTypes: [AssetType.STOCK, AssetType.CASH],
 	countries: ["GB"],
-	website: "https://www.trading212.com",
-	appUrl: "trading212://",
-	createClient: async (credentials: ApiKeyCredentials) => {
-		const client = new Trading212Client(credentials);
-		await client.verify();
-
-		return client;
+	url: {
+		website: "https://www.trading212.com",
+		app: "trading212://",
 	},
-	params: [
-		{ key: "apiKey", label: "Key ID" },
-		{ key: "apiSecret", label: "Secret Key" },
-	],
+	validateCredentials: async (credentials: ApiKeyCredentials, baseUrl = LIVE_BASE_URL) => {
+		await verifyPermissions(baseUrl, credentials);
+	},
+	Client: (credentials: ApiKeyCredentials) => new Trading212Client(credentials),
 	setup: [
 		{
 			description: "Open {{link}} and log into your account.",
@@ -37,7 +34,7 @@ export const trading212 = {
 		},
 		{
 			description:
-				'Generate a new API key, set a name (e.g. the app you are connecting), make sure IP access is unrestricted, and grant access to "Account Data", "Portfolio", "Metadata", "History - Transactions", "History - Orders" and "History - Dividends".',
+				"Generate a new API key, set a name (e.g. the app you are connecting), make sure IP access is unrestricted, and grant access to:\n- Account Data\n- History - Dividends\n- History - Orders\n- History - Transactions\n- Metadata\n- Portfolio",
 		},
 		{
 			description: "You will now be presented with an API Key ID and a Secret Key. Copy and paste those into the form.",

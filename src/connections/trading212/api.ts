@@ -193,7 +193,13 @@ export async function verifyPermissions(baseUrl: string, credentials: ApiKeyCred
 	for (const [permission, probe] of probes) {
 		try {
 			await probe();
-		} catch (_error) {
+		} catch (error) {
+			if (error instanceof ConnectError && error.status === 401) {
+				throw new ConnectError(PROVIDER_ID, "Invalid Trading 212 API Key ID or API Secret", {
+					status: 401,
+					cause: error,
+				});
+			}
 			missing.push(permission);
 		}
 	}
