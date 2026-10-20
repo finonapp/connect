@@ -9,8 +9,9 @@ import {
 	HISTORY_ORDERS_PAGE_SIZE,
 	HISTORY_ORDERS_PATH,
 	PROVIDER_ID,
+	SPOT_READ_AUTHORITIES,
 } from "./constants";
-import type { BitgetAccountAsset, BitgetResponse, BitgetSpotOrder } from "./types";
+import type { BitgetAccountAsset, BitgetAccountInfo, BitgetResponse, BitgetSpotOrder } from "./types";
 
 function signature(secret: string, timestamp: string, requestPath: string): string {
 	return createHmac("sha256", secret).update(`${timestamp}GET${requestPath}`).digest("base64");
@@ -81,7 +82,16 @@ async function bitgetGet<T>(path: string, credentials: ApiKeyCredentials, query?
 }
 
 export async function verifyCredentials(credentials: ApiKeyCredentials): Promise<void> {
-	await bitgetGet<unknown>(ACCOUNT_INFO_PATH, credentials);
+	const info = await bitgetGet<BitgetAccountInfo>(ACCOUNT_INFO_PATH, credentials);
+	const authorities = info?.authorities ?? [];
+
+	if (!authorities.some((authority) => SPOT_READ_AUTHORITIES.includes(authority))) {
+		throw new ConnectError(
+			PROVIDER_ID,
+			"API key is missing permissions: Spot > Trade. Enable it on the key and try again.",
+			{ status: 403 },
+		);
+	}
 }
 
 export function fetchAccountAssets(credentials: ApiKeyCredentials): Promise<BitgetAccountAsset[]> {

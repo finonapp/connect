@@ -9,3 +9,6 @@ export const ACCOUNT_ASSETS_PATH = "/api/v2/spot/account/assets";
 export const HISTORY_ORDERS_PATH = "/api/v2/spot/trade/history-orders";
 
 export const HISTORY_ORDERS_PAGE_SIZE = 100;
+
+// "stor"/"stow" = spot trading read / read-write, which covers assets and order history.
+export const SPOT_READ_AUTHORITIES = ["stor", "stow"];

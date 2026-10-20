@@ -40,3 +40,7 @@ export interface BitgetSpotOrder {
 	cTime: string;
 	uTime: string;
 }
+
+export interface BitgetAccountInfo {
+	authorities?: string[];
+}
