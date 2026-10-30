@@ -1,6 +1,5 @@
 import { createHmac } from "node:crypto";
 import { ConnectError } from "../../core/errors";
-import type { ApiKeyCredentials } from "../../core/types";
 import {
 	ACCOUNT_ASSETS_PATH,
 	ACCOUNT_INFO_PATH,
@@ -11,7 +10,13 @@ import {
 	PROVIDER_ID,
 	SPOT_READ_AUTHORITIES,
 } from "./constants";
-import type { BitgetAccountAsset, BitgetAccountInfo, BitgetResponse, BitgetSpotOrder } from "./types";
+import type {
+	BitgetAccountAsset,
+	BitgetAccountInfo,
+	BitgetApiCredentials,
+	BitgetResponse,
+	BitgetSpotOrder,
+} from "./types";
 
 function signature(secret: string, timestamp: string, requestPath: string): string {
 	return createHmac("sha256", secret).update(`${timestamp}GET${requestPath}`).digest("base64");
@@ -34,7 +39,7 @@ function authenticationErrorMessage(code: string, fallback: string): string {
 	}
 }
 
-async function bitgetGet<T>(path: string, credentials: ApiKeyCredentials, query?: URLSearchParams): Promise<T> {
+async function bitgetGet<T>(path: string, credentials: BitgetApiCredentials, query?: URLSearchParams): Promise<T> {
 	const queryString = query?.toString();
 	const requestPath = queryString ? `${path}?${queryString}` : path;
 	const timestamp = Date.now().toString();
@@ -45,7 +50,7 @@ async function bitgetGet<T>(path: string, credentials: ApiKeyCredentials, query?
 			method: "GET",
 			headers: {
 				"ACCESS-KEY": credentials.apiKey,
-				"ACCESS-PASSPHRASE": API_PASSPHRASE,
+				"ACCESS-PASSPHRASE": credentials.passphrase,
 				"ACCESS-SIGN": signature(credentials.apiSecret, timestamp, requestPath),
 				"ACCESS-TIMESTAMP": timestamp,
 				"Content-Type": "application/json",
@@ -81,7 +86,7 @@ async function bitgetGet<T>(path: string, credentials: ApiKeyCredentials, query?
 	return payload.data;
 }
 
-export async function verifyCredentials(credentials: ApiKeyCredentials): Promise<void> {
+export async function verifyCredentials(credentials: BitgetApiCredentials): Promise<void> {
 	const info = await bitgetGet<BitgetAccountInfo>(ACCOUNT_INFO_PATH, credentials);
 	const authorities = info?.authorities ?? [];
 
@@ -94,12 +99,12 @@ export async function verifyCredentials(credentials: ApiKeyCredentials): Promise
 	}
 }
 
-export function fetchAccountAssets(credentials: ApiKeyCredentials): Promise<BitgetAccountAsset[]> {
+export function fetchAccountAssets(credentials: BitgetApiCredentials): Promise<BitgetAccountAsset[]> {
 	return bitgetGet<BitgetAccountAsset[]>(ACCOUNT_ASSETS_PATH, credentials);
 }
 
 export function fetchSpotOrders(
-	credentials: ApiKeyCredentials,
+	credentials: BitgetApiCredentials,
 	options: { since?: number; idLessThan?: string } = {},
 ): Promise<BitgetSpotOrder[]> {
 	const query = new URLSearchParams({ limit: String(HISTORY_ORDERS_PAGE_SIZE) });

@@ -1,3 +1,5 @@
+import type { ApiKeyCredentials } from "../../core";
+
 export interface BitgetResponse<T> {
 	code: string;
 	msg: string;
@@ -43,4 +45,8 @@ export interface BitgetSpotOrder {
 
 export interface BitgetAccountInfo {
 	authorities?: string[];
+}
+
+export interface BitgetApiCredentials extends ApiKeyCredentials {
+	passphrase: string;
 }

@@ -1,18 +1,18 @@
 import type { Client, FetchOptions } from "../../core";
 import { ConnectError } from "../../core/errors";
-import type { ApiKeyCredentials, Asset, Transaction } from "../../core/types";
+import type { Asset, Transaction } from "../../core/types";
 import { fetchAccountAssets, fetchSpotOrders, verifyCredentials } from "./api";
 import { HISTORY_ORDERS_PAGE_SIZE, PROVIDER_ID, PROVIDER_NAME } from "./constants";
 import { normalizeAsset, normalizeTransaction } from "./normalize";
-import type { BitgetSpotOrder } from "./types";
+import type { BitgetApiCredentials, BitgetSpotOrder } from "./types";
 
 /** Bitget spot-account connection using an API key and secret. */
-export class BitgetClient implements Client<ApiKeyCredentials> {
+export class BitgetClient implements Client<BitgetApiCredentials> {
 	readonly id = PROVIDER_ID;
 	readonly name = PROVIDER_NAME;
-	readonly credentials: ApiKeyCredentials;
+	readonly credentials: BitgetApiCredentials;
 
-	constructor(credentials: ApiKeyCredentials) {
+	constructor(credentials: BitgetApiCredentials) {
 		this.credentials = credentials;
 	}
 
@@ -45,8 +45,7 @@ export class BitgetClient implements Client<ApiKeyCredentials> {
 		let transactions = orders
 			.filter((order) => Number(order.baseVolume) > 0)
 			.filter(
-				(order) =>
-					options.asset === undefined || order.baseCoin.toUpperCase() === options.asset.symbol.toUpperCase(),
+				(order) => options.asset === undefined || order.baseCoin.toUpperCase() === options.asset.symbol.toUpperCase(),
 			)
 			.map(normalizeTransaction);
 

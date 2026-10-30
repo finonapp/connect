@@ -1,7 +1,8 @@
-import { type ApiKeyCredentials, AssetType, AuthKind, type Provider } from "../../core";
+import { AssetType, AuthKind, type Provider } from "../../core";
 import { verifyCredentials } from "./api";
-import { PROVIDER_ID, PROVIDER_NAME } from "./constants";
 import { BitgetClient } from "./bitget";
+import { PROVIDER_ID, PROVIDER_NAME } from "./constants";
+import type { BitgetApiCredentials } from "./types";
 
 export const bitget = {
 	id: PROVIDER_ID,
@@ -14,7 +15,7 @@ export const bitget = {
 		app: "bitget://",
 	},
 	validateCredentials: verifyCredentials,
-	Client: (credentials: ApiKeyCredentials) => new BitgetClient(credentials),
+	Client: (credentials: BitgetApiCredentials) => new BitgetClient(credentials),
 	setup: [
 		{
 			description: "Open {{link}} and log into your account.",
@@ -36,7 +37,7 @@ export const bitget = {
 			description: "Copy the API Key ID and Secret Key into the form.",
 		},
 	],
-} satisfies Provider<ApiKeyCredentials>;
+} satisfies Provider<BitgetApiCredentials>;
 
 export type { BitgetClient } from "./bitget";
 export type { BitgetAccountAsset, BitgetSpotOrder } from "./types";
