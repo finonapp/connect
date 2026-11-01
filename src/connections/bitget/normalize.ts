@@ -33,18 +33,12 @@ function transactionFees(order: BitgetSpotOrder): number {
 
 export function normalizeTransaction(order: BitgetSpotOrder): Transaction<BitgetSpotOrder> {
 	const side = order.side.toLowerCase();
-	const amount = Math.abs(Number(order.quoteVolume));
 	return {
 		id: order.orderId,
-		flow:
-			side === "buy"
-				? TransactionFlow.BOUGHT
-				: side === "sell"
-					? TransactionFlow.SOLD
-					: TransactionFlow.OTHER,
+		flow: side === "buy" ? TransactionFlow.BOUGHT : side === "sell" ? TransactionFlow.SOLD : TransactionFlow.OTHER,
 		quantity: String(Math.abs(Number(order.baseVolume))),
 		assetSymbol: order.baseCoin.toUpperCase(),
-		amount: side === "buy" ? -amount : amount,
+		amount: Math.abs(Number(order.quoteVolume)),
 		currency: order.quoteCoin.toUpperCase(),
 		fees: transactionFees(order),
 		status: order.status,
