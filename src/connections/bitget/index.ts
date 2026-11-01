@@ -18,6 +18,7 @@ export const bitget = {
 	Client: (credentials: BitgetApiCredentials) => new BitgetClient(credentials),
 	setup: [
 		{
+			id: 1,
 			description: "Open {{link}} and log into your account.",
 			link: {
 				text: "Bitget",
@@ -26,14 +27,17 @@ export const bitget = {
 			},
 		},
 		{
+			id: 2,
 			description:
 				'Open your profile menu and select "API keys". In the mobile app, go to "Popular" > "More Services" > "Tools" > "API keys".',
 		},
 		{
+			id: 3,
 			description:
 				'Create an HMAC API key with read-only access. Set its passphrase to "freemyfinances" and enable the available account and spot-trading read permissions.',
 		},
 		{
+			id: 4,
 			description: "Copy the API Key ID and Secret Key into the form.",
 		},
 	],
