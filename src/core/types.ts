@@ -20,10 +20,6 @@ export enum TransactionFlow {
 export enum AuthKind {
 	API_KEY = "api-key",
 	OAUTH = "oauth",
-	/**
-	 * No API at all: the user exports a statement from the provider and hands
-	 * the file(s) over. Nothing to persist beyond the data you extract.
-	 */
 	FILE_IMPORT = "file-import",
 }
 

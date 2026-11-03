@@ -23,7 +23,7 @@ export interface FetchOptions {
  */
 export interface Client<C = Credentials> {
 	/** The current credentials (updated in place after a refresh). */
-	readonly credentials: C;
+	readonly credentials?: C;
 
 	/**
 	 * Check the credentials are usable: probe the API with the key pair, or
@@ -31,7 +31,7 @@ export interface Client<C = Credentials> {
 	 * throws a `ConnectError` describing what is wrong (missing permissions,
 	 * unreadable files) otherwise. `createClient` calls this for you.
 	 */
-	verify(): Promise<void>;
+	verify?(): Promise<void>;
 
 	/** Fetch and normalize everything the user holds. */
 	getAssets(): Promise<Asset[]>;

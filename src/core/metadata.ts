@@ -39,6 +39,7 @@ export interface Provider<C extends Credentials = Credentials> {
  * otherwise render the step as plain text.
  */
 export interface SetupStep {
+	id: number;
 	description: string;
 	link?: {
 		/** Display text for the link. */
