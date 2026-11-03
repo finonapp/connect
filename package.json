@@ -1,6 +1,6 @@
 {
 	"name": "@finon/connect",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"description": "Connect to UK financial providers with a uniform auth + normalized-data API.",
 	"publishConfig": {
 		"access": "public"
