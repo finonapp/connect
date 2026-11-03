@@ -14,16 +14,16 @@ export const moneybox = {
 		app: APP_URL,
 	},
 	validateCredentials: verifyStatement,
-	Client: async (credentials: FileImportCredentials) => new MoneyboxClient(credentials),
-	params: [
-		{
-			key: "files",
-			label: "Statement PDF",
-			type: "file",
-			accept: "application/pdf,.pdf",
-			multiple: true,
-		},
-	],
+	Client: (credentials: FileImportCredentials) => new MoneyboxClient(credentials),
+	// params: [
+	// 	{
+	// 		key: "files",
+	// 		label: "Statement PDF",
+	// 		type: "file",
+	// 		accept: "application/pdf,.pdf",
+	// 		multiple: true,
+	// 	},
+	// ],
 	setup: [
 		{
 			id: 1,
