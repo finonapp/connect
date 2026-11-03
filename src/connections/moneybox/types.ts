@@ -90,3 +90,9 @@ export interface MoneyboxTransaction {
 	/** Running "Cash balance" after the line, in GBP. */
 	balance: number;
 }
+
+export interface ParsedFile {
+	label: string;
+	statement?: MoneyboxStatement;
+	error?: unknown;
+}

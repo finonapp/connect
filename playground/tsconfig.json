@@ -1,13 +1,14 @@
 {
-  "extends": "astro/tsconfigs/strict",
-  "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist"],
-  "compilerOptions": {
-    "jsx": "react-jsx",
-    "jsxImportSource": "react",
-    "paths": {
-      "@finon/connect": ["../src/index.ts"],
-      "@lib/*": ["./src/lib/*"] 
-    }
-  }
+	"extends": "astro/tsconfigs/strict",
+	"include": [".astro/types.d.ts", "**/*"],
+	"exclude": ["dist"],
+	"compilerOptions": {
+		"jsx": "react-jsx",
+		"jsxImportSource": "react",
+		"paths": {
+			"@finon/connect": ["../src/index.ts"],
+			"@lib/*": ["./src/lib/*"],
+			"@core/*": ["../src/core/*"]
+		}
+	}
 }

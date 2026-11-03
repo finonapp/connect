@@ -1,10 +1,14 @@
-import { PRODUCT_CASH_ISA, PRODUCT_STOCKS_SHARES_ISA } from "./constants";
+import { ConnectError } from "@core/errors";
+import type { FileImportCredentials } from "../../core";
+import { PRODUCT_CASH_ISA, PRODUCT_STOCKS_SHARES_ISA, PROVIDER_ID } from "./constants";
+import { extractText, fileLabel } from "./pdf";
 import type {
 	MoneyboxHolding,
 	MoneyboxProduct,
 	MoneyboxStatement,
 	MoneyboxTransaction,
 	MoneyboxTransactionKind,
+	ParsedFile,
 } from "./types";
 
 /**
@@ -203,4 +207,40 @@ export function parseStatement(text: string, fileName?: string): MoneyboxStateme
 		holdings: product === PRODUCT_STOCKS_SHARES_ISA ? parseHoldings(body) : [],
 		transactions: parseTransactions(body),
 	};
+}
+
+export async function verifyStatement(credentials: FileImportCredentials): Promise<void> {
+	const files = await parseFiles(credentials);
+
+	if (!files || files.length === 0) {
+		throw new ConnectError(PROVIDER_ID, `No files provided or readable as Moneybox statements`);
+	}
+
+	const unreadable = files.filter((file) => !file.statement);
+	if (unreadable.length > 0) {
+		throw new ConnectError(
+			PROVIDER_ID,
+			`Not readable as Moneybox statements: ${unreadable.map((file) => file.label).join(", ")}`,
+			{
+				cause: unreadable[0]?.error,
+			},
+		);
+	}
+}
+
+export async function parseFiles(credentials: FileImportCredentials): Promise<ParsedFile[]> {
+	if (!credentials.files || credentials.files.length === 0) {
+		return Promise.resolve([]);
+	}
+
+	return Promise.all(
+		credentials.files.map(async (file, index): Promise<ParsedFile> => {
+			const label = fileLabel(file, index);
+			try {
+				return { label, statement: parseStatement(await extractText(file), label) };
+			} catch (error) {
+				return { label, error };
+			}
+		}),
+	);
 }

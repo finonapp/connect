@@ -25,7 +25,13 @@
 		"noUnusedLocals": false,
 		"noUnusedParameters": false,
 		"noPropertyAccessFromIndexSignature": false,
-		"types": ["node", "bun"]
+		"types": ["node", "bun"],
+
+		// Path aliases
+		"paths": {
+			"@/*": ["./src/*"],
+			"@core/*": ["./src/core/*"]
+		}
 	},
 	// The playground is its own Astro project with its own tsconfig.
 	"exclude": ["node_modules", "playground"]

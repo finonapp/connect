@@ -8,14 +8,21 @@ export const prerender = false;
 export const POST: APIRoute = async ({ request }) => {
 	try {
 		const body = (await request.json()) as { apiKey?: string; apiSecret?: string };
-		if (!body.apiKey || !body.apiSecret) {
-			return json({ error: "apiKey and apiSecret are required" }, 400);
+		if (
+			typeof body.apiKey !== "string" ||
+			body.apiKey.trim() === "" ||
+			typeof body.apiSecret !== "string" ||
+			body.apiSecret.trim() === ""
+		) {
+			return json({ error: "apiKey and apiSecret must be non-empty strings" }, 400);
 		}
 
-		const Trading212 = await trading212.createClient({
-			apiKey: body.apiKey.trim(),
-			apiSecret: body.apiSecret.trim(),
-		});
+		const apiKey = body.apiKey.trim();
+		const apiSecret = body.apiSecret.trim();
+
+		await trading212.validateCredentials({ apiKey, apiSecret });
+
+		const Trading212 = trading212.Client({ apiKey, apiSecret });
 
 		setSession(trading212.id, Trading212);
 		return json({ ok: true });

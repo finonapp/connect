@@ -12,13 +12,15 @@ type Props = {
 };
 
 export function PlaygroundApiKey({ provider, setConnected, run, busy, connected }: Props) {
-	const [values, setValues] = useState<Record<string, string>>({});
-	const filled = provider.params.every((param) => values[param.key]?.trim());
+	const [apiKey, setApiKey] = useState("");
+	const [apiSecret, setApiSecret] = useState("");
+	const filled = apiKey.trim() !== "" && apiSecret.trim() !== "";
 
 	async function connect() {
 		return run(async () => {
-			await postJson(`/api/${provider.id}/connect`, values);
-			setValues({});
+			await postJson(`/api/${provider.id}/connect`, { apiKey, apiSecret });
+			setApiKey("");
+			setApiSecret("");
 			setConnected(true);
 		});
 	}
@@ -26,17 +28,24 @@ export function PlaygroundApiKey({ provider, setConnected, run, busy, connected 
 	return (
 		<>
 			<p className="muted">Paste the API credentials from your {provider.name} account.</p>
-			{provider.params.map((param) => (
-				<label className="field-label" key={param.key}>
-					{param.label}
-					<input
-						type="password"
-						value={values[param.key] ?? ""}
-						onChange={(e) => setValues({ ...values, [param.key]: e.target.value })}
-						autoComplete="off"
-					/>
-				</label>
-			))}
+			<label className="field-label">
+				Key ID
+				<input
+					type="password"
+					value={apiKey}
+					onChange={(e) => setApiKey(e.target.value)}
+					autoComplete="off"
+				/>
+			</label>
+			<label className="field-label">
+				Secret Key
+				<input
+					type="password"
+					value={apiSecret}
+					onChange={(e) => setApiSecret(e.target.value)}
+					autoComplete="off"
+				/>
+			</label>
 			<button type="button" className="primary" disabled={busy || !filled} onClick={connect}>
 				{busy ? "Verifying..." : connected ? "Reconnect" : "Connect"}
 			</button>

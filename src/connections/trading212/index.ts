@@ -19,6 +19,7 @@ export const trading212 = {
 	Client: (credentials: ApiKeyCredentials) => new Trading212Client(credentials),
 	setup: [
 		{
+			id: 1,
 			description: "Open {{link}} and log into your account.",
 			link: {
 				text: "Trading 212",
@@ -27,16 +28,20 @@ export const trading212 = {
 			},
 		},
 		{
+			id: 2,
 			description: "Click on the hamburger menu (three horizontal lines) in the navigation bar.",
 		},
 		{
+			id: 3,
 			description: 'Navigate to "Settings" > "API (Beta)".',
 		},
 		{
+			id: 4,
 			description:
 				"Generate a new API key, set a name (e.g. the app you are connecting), make sure IP access is unrestricted, and grant access to:\n- Account Data\n- History - Dividends\n- History - Orders\n- History - Transactions\n- Metadata\n- Portfolio",
 		},
 		{
+			id: 5,
 			description: "You will now be presented with an API Key ID and a Secret Key. Copy and paste those into the form.",
 		},
 	],

@@ -12,6 +12,7 @@ Connect to financial providers with a uniform contract and a normalized data mod
 | Provider    | Auth        | Asset types           |
 | ----------- | ----------- | --------------------- |
 | Trading 212 | API key     | Stocks, cash          |
+| Bitget      | API key     | Crypto                |
 | Moneybox    | File import | Stocks, cash, savings |
 
 Per-provider usage and setup details will live in the docs; in the meantime, each provider's metadata (`setup`, `params`) and the [playground](playground/) show the full flow.
@@ -38,6 +39,18 @@ const transactions = await client.getTransactions({ since: lastSyncedAt });
 // Later, rebuild a client from stored credentials without re-verifying.
 const stored = new trading212.Client(storedCredentials);
 ```
+
+Bitget uses the same API-key contract for spot assets and order history. Its API key must be created with the passphrase `freemyfinances`, as shown in `bitget.setup`:
+
+```ts
+import { createClient, bitget } from "@finon/connect";
+
+const client = await createClient(bitget, { apiKey, apiSecret });
+const assets = await client.getAssets();
+const transactions = await client.getTransactions();
+```
+
+Bitget's spot order-history API only returns the most recent 90 days of records.
 
 Providers without an API work the same way from statement files. Moneybox, for example, parses the PDF statement the user generates in the app:
 

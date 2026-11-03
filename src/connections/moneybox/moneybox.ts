@@ -3,15 +3,8 @@ import { ConnectError } from "../../core/errors";
 import type { Asset, FileImportCredentials, Transaction } from "../../core/types";
 import { PROVIDER_ID, PROVIDER_NAME } from "./constants";
 import { normalizeAssets, normalizeTransaction, transactionAssetId, transactionId } from "./normalize";
-import { parseStatement, toUnixSeconds } from "./parse";
-import { extractText, fileLabel } from "./pdf";
-import type { MoneyboxStatement } from "./types";
-
-interface ParsedFile {
-	label: string;
-	statement?: MoneyboxStatement;
-	error?: unknown;
-}
+import { parseFiles, toUnixSeconds, verifyStatement } from "./parse";
+import type { MoneyboxStatement, ParsedFile } from "./types";
 
 /**
  * Moneybox connection client.
@@ -38,38 +31,23 @@ export class MoneyboxClient implements Client<FileImportCredentials> {
 	readonly name = PROVIDER_NAME;
 
 	readonly credentials: FileImportCredentials;
-	private parsed: Promise<ParsedFile[]> | null = null;
+	private parsed: ParsedFile[] = [];
 
 	constructor(credentials: FileImportCredentials) {
 		this.credentials = credentials;
 	}
 
 	/** Parse every file once; later calls reuse the result. */
-	private parseFiles(): Promise<ParsedFile[]> {
-		if (!this.parsed) {
-			this.parsed = Promise.all(
-				this.credentials.files.map(async (file, index): Promise<ParsedFile> => {
-					const label = fileLabel(file, index);
-					try {
-						return { label, statement: parseStatement(await extractText(file), label) };
-					} catch (error) {
-						return { label, error };
-					}
-				}),
-			);
+	private async getFiles(): Promise<ParsedFile[] | null> {
+		if (this.parsed.length === 0) {
+			this.parsed = await parseFiles(this.credentials);
 		}
 		return this.parsed;
 	}
 
 	/** Throws a `ConnectError` naming every file that is not a readable Moneybox statement. */
 	async verify(): Promise<void> {
-		const files = await this.parseFiles();
-		const unreadable = files.filter((file) => !file.statement);
-		if (unreadable.length > 0) {
-			throw new ConnectError(PROVIDER_ID, `Not readable as Moneybox statements: ${unreadable.map((file) => file.label).join(", ")}`, {
-				cause: unreadable[0]?.error,
-			});
-		}
+		await verifyStatement(this.credentials);
 	}
 
 	/**
@@ -77,8 +55,10 @@ export class MoneyboxClient implements Client<FileImportCredentials> {
 	 * be read as a Moneybox statement (`verify` reports all of them at once).
 	 */
 	async getStatements(): Promise<MoneyboxStatement[]> {
-		const files = await this.parseFiles();
 		const statements: MoneyboxStatement[] = [];
+
+		const files = await this.getFiles();
+		if (!files) throw new ConnectError(PROVIDER_ID, `No files provided or readable as Moneybox statements`);
 
 		for (const file of files) {
 			if (file.statement) {
